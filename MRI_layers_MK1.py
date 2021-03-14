@@ -58,6 +58,55 @@ def display_mri(im_data, im_mask, layers):
         plt.imshow(im_mask[:,:,ind], cmap="gray")
     plt.show()
     return
+
+#This function takes a lesion mask and returns a 3-d array indicating if each point is in the lesion
+def find_interior(im_mask):
+    interior = np.zeros((len(im_data), len(im_data[0]), len(im_data[0][0])))
+    for layer in im_mask[0][0]:
+        for x in im_mask[0]:
+            for y in im_mask:
+                if im_mask[x][y][layer]>0:
+                    interior[x][y][layer] = 1
+    return np.array(interior)
+
+#This function takes a 3-d array indicating which points are in the interior of the lesion and outputs a list with the area of each layer, 
+#the layer with the max area, and the maximum area. The list of areas will be useful for putting them into excel to look at them hopefully.
+def find_area(interior):
+    areas = []
+    maxLayer = 0
+    maxArea = 0
+    for layer in range(len(interior[0][0])):
+        area = 0
+        for y in range(len(interior[0])):
+            for x in range(len(interior)):
+                area+= interior[x][y][layer]
+        areas.append(area)
+        if area>maxArea:
+            maxLayer = layer
+            maxArea = area
+    return areas, maxLayer, maxArea
+
+#This function takes the interior of the lesion and outputs a list of tuples indicating the center of mass at each layer
+def find_COM(interior):
+    COM = []
+    for layer in range(len(interior[0][0])):
+        y_center = 0
+        x_center = 0
+        weighted_points = 0
+        for y in range(len(interior[0])):
+            for x in range(len(interior))
+                x_center += x*interior[x][y]
+                weighted_points += interior[x][y]
+        x_center = x_center/weighted_points
+        weighted_points = 0
+        for x in range(len(interior)):
+            for y in range(len(interior[0]))
+                y_center += y*interior[x][y]
+                weighted_points += interior[x][y]
+        y_center = y_center/weighted_points
+        COM.append((x_center, y_center))
+    return COM
+        
 """ 
 def mri_hole(im_data, im_mask, layers):
    x_size = len(im_data)
