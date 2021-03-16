@@ -95,18 +95,34 @@ def find_COM(interior):
         weighted_points = 0
         for y in range(len(interior[0])):
             for x in range(len(interior))
-                x_center += x*interior[x][y]
-                weighted_points += interior[x][y]
+                x_center += x*interior[x][y][layer] #Since the interior matrix is just an indicator function
+                weighted_points += interior[x][y][layer]
         x_center = x_center/weighted_points
         weighted_points = 0
         for x in range(len(interior)):
             for y in range(len(interior[0]))
-                y_center += y*interior[x][y]
-                weighted_points += interior[x][y]
+                y_center += y*interior[x][y][layer]
+                weighted_points += interior[x][y][layer]
         y_center = y_center/weighted_points
         COM.append((x_center, y_center))
     return COM
         
+
+#This function takes the interior and the image data (should have the same dimensions) and outputs a list containing the average intensity of each layer
+def average_intensity(interior, im_data):
+    avg_intensity = []
+    for layer in range(len(interior[0][0])):
+        intensity = 0
+        sum = 0
+        for y in range(len(interior[0])):
+            for x in range(len(interior)):
+                intensity += im_data[x][y][layer]*interior[x][y][layer]
+                sum += interior[x][y][layer]
+        avg_intensity.append(intensity/sum)     
+    return avg_intensity
+        
+                
+                      
 """ 
 def mri_hole(im_data, im_mask, layers):
    x_size = len(im_data)
