@@ -108,18 +108,28 @@ def find_COM(interior):
     return COM
         
 
-#This function takes the interior and the image data (should have the same dimensions) and outputs a list containing the average intensity of each layer
-def average_intensity(interior, im_data):
+#This function takes the interior and the image data (should have the same dimensions) and outputs a list containing the 
+#average intensity of each layer and the variance in intensity in that same layer.
+def test_intensity(interior, im_data):
     avg_intensity = []
+    intensity_variance = []
     for layer in range(len(interior[0][0])):
         intensity = 0
+        variance = 0
         sum = 0
         for y in range(len(interior[0])):
             for x in range(len(interior)):
                 intensity += im_data[x][y][layer]*interior[x][y][layer]
+                variance += (im_data[x][y][layer]*interior[x][y][layer])**2
                 sum += interior[x][y][layer]
-        avg_intensity.append(intensity/sum)     
-    return avg_intensity
+                
+        intensity = intensity/sum
+        variance = (variance - intensity**2)/sum
+        
+        avg_intensity.append(intensity)
+        intensity_variance.append(variance)
+        
+    return avg_intensity, intensity_variance
         
                 
                       
