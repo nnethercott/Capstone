@@ -61,7 +61,7 @@ def display_mri(im_data, im_mask, layers):
 
 #This function takes a lesion mask and returns a 3-d array indicating if each point is in the lesion
 def find_interior(im_mask):
-    interior = np.zeros((len(im_data), len(im_data[0]), len(im_data[0][0])))
+    interior = np.zeros((len(im_mask), len(im_mask[0]), len(im_mask[0][0])))
     for layer in im_mask[0][0]:
         for x in im_mask[0]:
             for y in im_mask:
@@ -94,13 +94,13 @@ def find_COM(interior):
         x_center = 0
         weighted_points = 0
         for y in range(len(interior[0])):
-            for x in range(len(interior))
+            for x in range(len(interior)):
                 x_center += x*interior[x][y][layer] #Since the interior matrix is just an indicator function
                 weighted_points += interior[x][y][layer]
         x_center = x_center/weighted_points
         weighted_points = 0
         for x in range(len(interior)):
-            for y in range(len(interior[0]))
+            for y in range(len(interior[0])):
                 y_center += y*interior[x][y][layer]
                 weighted_points += interior[x][y][layer]
         y_center = y_center/weighted_points
