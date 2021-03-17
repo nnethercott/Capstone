@@ -62,20 +62,20 @@ def display_mri(im_data, im_mask, layers):
 #This function takes a lesion mask and returns a 3-d array indicating if each point is in the lesion
 def find_interior(im_mask):
     interior = np.zeros((len(im_mask), len(im_mask[0]), len(im_mask[0][0])))
-    for layer in im_mask[0][0]:
-        for x in im_mask[0]:
-            for y in im_mask:
+    for layer in range(len(im_mask[0][0])):
+        for y in range(len(im_mask[0])):
+            for x in range(len(im_mask)):
                 if im_mask[x][y][layer]>0:
                     interior[x][y][layer] = 1
     return np.array(interior)
 
 #This function takes a 3-d array indicating which points are in the interior of the lesion and outputs a list with the area of each layer, 
 #the layer with the max area, and the maximum area. The list of areas will be useful for putting them into excel to look at them hopefully.
-def find_area(interior):
+def find_area(interior, layers):
     areas = []
     maxLayer = 0
     maxArea = 0
-    for layer in range(len(interior[0][0])):
+    for layer in layers:
         area = 0
         for y in range(len(interior[0])):
             for x in range(len(interior)):
@@ -87,9 +87,9 @@ def find_area(interior):
     return areas, maxLayer, maxArea
 
 #This function takes the interior of the lesion and outputs a list of tuples indicating the center of mass at each layer
-def find_COM(interior):
+def find_COM(interior, layers):
     COM = []
-    for layer in range(len(interior[0][0])):
+    for layer in layers:
         y_center = 0
         x_center = 0
         weighted_points = 0
@@ -104,16 +104,16 @@ def find_COM(interior):
                 y_center += y*interior[x][y][layer]
                 weighted_points += interior[x][y][layer]
         y_center = y_center/weighted_points
-        COM.append((x_center, y_center))
+        COM.append([x_center, y_center])
     return COM
         
 
 #This function takes the interior and the image data (should have the same dimensions) and outputs a list containing the 
 #average intensity of each layer and the variance in intensity in that same layer.
-def test_intensity(interior, im_data):
+def test_intensity(interior, im_data, layers):
     avg_intensity = []
     intensity_variance = []
-    for layer in range(len(interior[0][0])):
+    for layer in layers:
         intensity = 0
         variance = 0
         sum = 0
@@ -123,16 +123,18 @@ def test_intensity(interior, im_data):
                 variance += (im_data[x][y][layer]*interior[x][y][layer])**2
                 sum += interior[x][y][layer]
                 
-        intensity = intensity/sum
-        variance = (variance - intensity**2)/sum
         
+        variance = (variance - intensity**2/sum)/sum
+        intensity = intensity/sum
         avg_intensity.append(intensity)
         intensity_variance.append(variance)
         
     return avg_intensity, intensity_variance
         
                 
-                      
+
+
+                   
 """ 
 def mri_hole(im_data, im_mask, layers):
    x_size = len(im_data)
@@ -151,3 +153,16 @@ image_mask = data.get_fdata() #This looks like an array
 data_1 = nib.load("c0003s0002t01_t1w_stx.nii.gz") #Name of MRI file
 image_data = data_1.get_fdata() #This looks like an array
 #plt.imshow(image_mask[:,:,70], cmap="gray") #Use this to generate an image
+
+layers = find_layers(image_mask)
+interior = find_interior(image_mask)
+area, maxLayer, maxArea = find_area(interior, layers)
+COM = find_COM(interior, layers)
+averageIntensity, intensityVariance = test_intensity(interior, image_data, layers)
+
+with open("testing.csv", 'w', newline = '') as myfile:
+    wr = csv.writer(myfile, quoting = csv.QUOTE_ALL)
+    wr.writerow(area)
+    wr.writerow(averageIntensity)
+    wr.writerow(intensityVariance)
+    wr.writerows(COM)
