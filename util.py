@@ -54,7 +54,7 @@ def k(s):
     params:
         s: 2D scalar-valued array representing surface 
     '''
-    sy, sx = np.gradient(s)
+    sy, sx = np.gradient(s, np.linspace(-1,1, s.shape[0]), np.linspace(-1,1, s.shape[1]))
     norm = (sx**2 + sy**2)**0.5
     nx = sx/(norm+0.00001)
     ny = sy/(norm+0.00001)
@@ -71,10 +71,10 @@ def mean_curvature(Z, step=1):
 
     Observations: this function performs more robustly than k
     '''
-    Zy, Zx  = np.gradient(Z)
-    Zxy, Zxx = np.gradient(Zx)
-    Zyy, _ = np.gradient(Zy)
-
+    Zy, Zx  = np.gradient(Z, np.linspace(-1,1, Z.shape[0]), np.linspace(-1,1, Z.shape[1]))
+    Zxy, Zxx = np.gradient(Zx, np.linspace(-1,1, Z.shape[0]), np.linspace(-1,1, Z.shape[1]))
+    Zyy, _ = np.gradient(Zy, np.linspace(-1,1, Z.shape[0]), np.linspace(-1,1, Z.shape[1]))
+    
     H = (Zx**2 + step)*Zyy - 2*Zx*Zy*Zxy + (Zy**2 + step)*Zxx
     H = -H/(2*(Zx**2 + Zy**2 + step)**(1.5))
 
