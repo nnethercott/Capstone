@@ -64,13 +64,18 @@ def k(s):
     
     return nxx+nyy
 
-def mean_curvature(Z, step=1):
+def mean_curvature(Z):
     '''
     curvature function from stack overflow. step denotes spacing on grid vals
     Note: convention different from Sethian, this function returns negative values from k
 
     Observations: this function performs more robustly than k
     '''
+    #get average step size for curvature function 
+    xstep = 2/(Z.shape[1])
+    ystep = 2/(Z.shape[0])
+    step = 0.5*(xstep+ystep)
+    
     Zy, Zx  = np.gradient(Z, np.linspace(-1,1, Z.shape[0]), np.linspace(-1,1, Z.shape[1]))
     Zxy, Zxx = np.gradient(Zx, np.linspace(-1,1, Z.shape[0]), np.linspace(-1,1, Z.shape[1]))
     Zyy, _ = np.gradient(Zy, np.linspace(-1,1, Z.shape[0]), np.linspace(-1,1, Z.shape[1]))
