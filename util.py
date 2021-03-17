@@ -9,7 +9,6 @@ def showsurf(surface, ls=False):
         ls: "zero Level set". if True then we plot the level set. defaults to false 
     """
     fig = plt.figure(figsize=(10,10))
-    ax = fig.add_subplot(111, projection='3d')
 
     x = np.linspace(0, surface.shape[1]-1, surface.shape[1])
     y = np.linspace(0, surface.shape[0]-1, surface.shape[0])
@@ -17,9 +16,10 @@ def showsurf(surface, ls=False):
     X,Y = np.meshgrid(x,y)
     
     if not ls:
+        ax = fig.add_subplot(111, projection='3d')
         ax.plot_surface(X,Y,surface)
     if ls:
-        ax.contour(X,Y,surface, [0])
+        plt.contour(X,Y,surface, [0])
 
 def organize(c):
     """
