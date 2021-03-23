@@ -133,7 +133,24 @@ def test_intensity(interior, im_data, layers):
         
                 
 
+#This function takes image data and outputs two filtered versions of the image; one with the difference in intensity in the x direction and one in the y direction
+def diff_filter(im_data):
+    xDiff = np.zeros((len(im_data), len(im_data[0]), len(im_data[0][0])))
+    yDiff = np.zeros((len(im_data), len(im_data[0]), len(im_data[0][0])))
+    for layer in range(len(im_data[0][0])):
+        for y in range(len(im_data[0])):
+            for x in range(len(im_data)):
+                if x < 1:
+                    pass
+                else:
+                    xDiff = im_data[x][y][layer] - im_data[x-1][y][layer]
+                if y<1:
+                    pass
+                else:
+                    yDiff = im_data[x][y][layer] - im_data[x][y-1][layer]
+    return xDiff, yDiff
 
+#Note that the result of this can just be fed to the test_intensity function
                    
 """ 
 def mri_hole(im_data, im_mask, layers):
