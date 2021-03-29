@@ -120,13 +120,19 @@ def test_intensity(interior, im_data, layers):
         for y in range(len(interior[0])):
             for x in range(len(interior)):
                 intensity += im_data[x][y][layer]*interior[x][y][layer]
-                variance += (im_data[x][y][layer]*interior[x][y][layer])**2
+                sum += interior[x][y][layer]
+        
+        intensity = intensity/sum
+        avg_intensity.append(intensity)
+        sum = 0
+        for y in range(len(interior[0])):
+            for x in range(len(interior)):
+                variance += (im_data[x][y][layer]*interior[x][y][layer] - intensity)**2
                 sum += interior[x][y][layer]
                 
         
-        variance = (variance - intensity**2/sum)/sum
-        intensity = intensity/sum
-        avg_intensity.append(intensity)
+        variance = variance/sum
+        
         intensity_variance.append(variance)
         
     return avg_intensity, intensity_variance
@@ -143,11 +149,11 @@ def diff_filter(im_data):
                 if x < 1:
                     pass
                 else:
-                    xDiff = im_data[x][y][layer] - im_data[x-1][y][layer]
+                    xDiff[x][y][layer] = im_data[x][y][layer] - im_data[x-1][y][layer]
                 if y<1:
                     pass
                 else:
-                    yDiff = im_data[x][y][layer] - im_data[x][y-1][layer]
+                    yDiff[x][y][layer] = im_data[x][y][layer] - im_data[x][y-1][layer]
     return xDiff, yDiff
 
 #Note that the result of this can just be fed to the test_intensity function
