@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def showsurf(surface, ls=False):
+def showsurf(surface, figsize = (6,6), ls=False):
     """
     function for plotting our surface in either 3d or 2d level set
     params:
         surface: 2d scalar valued array representing the surface
         ls: "zero Level set". if True then we plot the level set. defaults to false 
     """
-    fig = plt.figure(figsize=(10,10))
+    fig = plt.figure(figsize=figsize)
 
     x = np.linspace(0, surface.shape[1]-1, surface.shape[1])
     y = np.linspace(0, surface.shape[0]-1, surface.shape[0])
@@ -19,7 +19,7 @@ def showsurf(surface, ls=False):
         ax = fig.add_subplot(111, projection='3d')
         ax.plot_surface(X,Y,surface)
     if ls:
-        plt.contour(X,Y,surface, [0])
+        plt.contour(surface,[0], colors='red')
 
 def organize(c):
     """
@@ -104,3 +104,23 @@ def parabloid(shape, xrad=1, yrad=1, left=0, top=0):
     xx, yy = np.meshgrid(x,y)
 
     return -(((xx-left)/xrad)**2+((yy-top)/yrad)**2)+1
+
+def surf2simple(surface, threshold = 0.05):
+    
+    #two step process
+    #step 1
+    s = -1*np.ones(surface.shape)
+    positive_indeces = list(zip(*np.where(surface>0)))
+                            
+    for index in positive_indeces:
+        s[index] = 1
+    
+    #step 2
+    ny, nx = np.gradient(s)
+    n = ny**2+nx**2
+    zero_indeces = list(zip(*np.where(n>0)))
+    
+    for index in zero_indeces:
+        s[index] = 0
+    
+    return s 
